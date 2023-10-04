@@ -20,6 +20,13 @@ fun main(args: Array<String>) {
 
 //    varargDefaultAndNamedParameterExample()
 //    extensionFunctionExample()
+//    classExample()
+//    constructorExample()
+//    companionObjectExample()
+//    anonymousClassExample()
+//    exceptionExample()
+//    lambdaFunctions()
+//    genericExample()
 
 }
 
@@ -208,4 +215,102 @@ fun extensionFunctionExample() {
 
     val num = 7
     println("Is $num odd? ${num.isOdd()}")
+}
+
+fun classExample() {
+    // Here we are creating object of parent class and assigning it to child class
+    val circle : Shape = Circle(5.0)
+    circle.changeName("newCircle")
+    println(circle.name + " area is ${circle.area()}" + " and perimeter is ${circle.perimeter()}")
+}
+
+fun constructorExample() {
+    // using secondary constructor
+    val rect = Rectangle(4, 5)
+    println(rect.name + " area is ${rect.area()}" + " and perimeter is ${rect.perimeter()}")
+}
+
+fun companionObjectExample() {
+    val circle = Circle.randomCircle()
+    println(circle.name + " area is ${circle.area()}" + " and perimeter is ${circle.perimeter()}")
+
+    // using apply we can change the value of object without referencing it again and again
+    // there are also 'let', 'run', and 'with' function which can also be used for same purpose
+    circle.apply {
+        name = "newCircle"
+        radius = 10.0
+    }
+    println(circle.name + " area is ${circle.area()}" + " and perimeter is ${circle.perimeter()}")
+}
+
+fun anonymousClassExample() {
+    val base = 3.0
+    val sides = 4.0
+    val height = 2.0
+
+    val parallelogram = object : Shape("parallelogram") {
+        override fun area(): Double {
+            return base * height
+        }
+
+        override fun perimeter(): Double {
+            return 2 * (base + sides)
+        }
+    }
+
+    println(parallelogram.name + " area is ${parallelogram.area()}" + " and perimeter is ${parallelogram.perimeter()}")
+}
+
+// In kotlin, if we want to tell that this function can throw exception, we have to add @throws annotation in function documentation
+/**
+ * Exception handling Example.
+ *
+ * @throws ArithmeticException if denominator is 0
+ */
+fun exceptionExample() {
+    val num = 12
+    val denom = 0
+    val result = try {
+        // Throw custom DivideByZeroException.
+        // If we remove this line, it will throw ArithmeticException
+        if (denom == 0) throw DivideByZeroException()
+        num / denom
+    } catch (e : ArithmeticException) {
+        println("Exception occurred: ${e.stackTraceToString()}")
+        // if the code comes here, below value will be assigned to result
+        num / 4
+        throw e
+    } finally {
+        println("finally block")
+    }
+    println("result is $result")
+}
+
+fun lambdaFunctions() {
+    var list = (1..20).toList()
+    println(list)
+    list = list.filter { it % 2 == 0 }
+    println(list)
+
+    // Custom filter function for list of shapes
+    fun List<Shape>.customFilter(filter : (Shape, String) -> Boolean) : List<Shape> {
+        val result = mutableListOf<Shape>()
+        for (shape in this) {
+            if (filter(shape, "Rectangle")) {
+                result.add(shape)
+            }
+        }
+        return result
+    }
+
+    var shapes = listOf(Circle(9.0), Rectangle(4, 12), Circle(4.0), Rectangle(2, 6))
+    // below expression is same as ```shapes = shapes.filter { it.area() > 20 && it.name == "Rectangle" }```
+    shapes = shapes.customFilter { shape, name -> shape.area() > 20 && shape.name == name }
+    println("No of Shapes matches filter are ${shapes.size}")
+    shapes.forEach{println("${it.name} area is ${it.area()}")}
+}
+
+fun genericExample() {
+    var triplet = Triplet<Int, String, Boolean>(1, "one", true)
+    triplet.printTypes()
 }
